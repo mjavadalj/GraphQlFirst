@@ -27,7 +27,7 @@ sequelize.sync();
 app.use('/graphql', graphQlHttp({
 
     schema: buildSchema(`
-        type Event {
+        type Task {
             taskId: String!
             title: String!
             description: String!
@@ -35,7 +35,7 @@ app.use('/graphql', graphQlHttp({
             related: [String!]!
         }
 
-        input EventInput {
+        input TaskInput {
             title: String!
             description: String!
             dueDate: String!
@@ -43,11 +43,11 @@ app.use('/graphql', graphQlHttp({
         }
 
         type RootQuery {
-            events: [Event!]!
+            tasks: [Task!]!
         }
 
         type RootMutation {
-            createEvent(eventInput: EventInput): Event
+            createTask(taskInput: TaskInput): Task
         }
 
         schema{
@@ -56,18 +56,18 @@ app.use('/graphql', graphQlHttp({
         }
     `),
     rootValue: {
-        events: () => {
+        tasks: () => {
             return Task.findAll({ attributes: ['title', 'description'] }).then(tasks => {
                 return tasks;
             }).catch(err => { return err })
         },
-        createEvent: (args) => {
-            const event = Task.create({
-                taskId: "2",
-                title: args.eventInput.title,
-                description: args.eventInput.description,
+        createTask: (args) => {
+            const task = Task.create({
+                taskId: "22", //TODO: Do something with this shit ! may be graphQl ID ??
+                title: args.taskInput.title,
+                description: args.taskInput.description,
                 dueDate: new Date().toISOString(),
-                related: args.eventInput.related
+                related: args.taskInput.related
             }).then(result => {
                 console.log(result);
                 return result;
@@ -76,7 +76,7 @@ app.use('/graphql', graphQlHttp({
                 console.log(err)
                 return err;
             })
-            return event;
+            return task;
         }
     },
     graphiql: true
