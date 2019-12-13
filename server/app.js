@@ -4,13 +4,12 @@ const cors = require('cors');
 const app = express();
 const graphQlHttp = require('express-graphql');
 const { buildSchema } = require('graphql');
-//const Sequelize = require('sequelize');
 const sequelize = require('./api/models/connection');
-app.use(bodyParser.urlencoded({ extended: false }));
+const Task = require('./api/models/task');
+
+//app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 app.use(cors());
-
-//const sequelize = new Sequelize('postgres://bygoadwv:K3zKb5UZ-nYk3mAevW1LQtPHRpBNIUzT@rajje.db.elephantsql.com:5432/bygoadwv');
 sequelize
     .authenticate()
     .then(() => {
@@ -25,46 +24,58 @@ require('./api/models/relations');
 sequelize.sync();
 
 
-app.get('/graphql', graphQlHttp({
+app.use('/graphql', graphQlHttp({
 
     schema: buildSchema(`
         type Event {
-            taskId: ID!
+            taskId: String!
             title: String!
             description: String!
             dueDate: String!
             related: [String!]!
         }
+
         input EventInput {
             title: String!
             description: String!
             dueDate: String!
-            related: [String!]!
-
+            related: [String]
         }
-        type rootQuery {
+
+        type RootQuery {
             events: [Event!]!
         }
-        type rootMutation {
+
+        type RootMutation {
             createEvent(eventInput: EventInput): Event
         }
+
         schema{
-            query: rootQuery
-            mutation: rootMutation
+            query: RootQuery
+            mutation: RootMutation
         }
     `),
     rootValue: {
         events: () => {
-            return //TODO: Something;
+            return Task.findAll({ attributes: ['title', 'description'] }).then(tasks => {
+                return tasks;
+            }).catch(err => { return err })
         },
         createEvent: (args) => {
-            const event = {
-                taskId: Math.random().toString(),
+            const event = Task.create({
+                taskId: "2",
                 title: args.eventInput.title,
                 description: args.eventInput.description,
                 dueDate: new Date().toISOString(),
                 related: args.eventInput.related
-            }
+            }).then(result => {
+                console.log(result);
+                return result;
+
+            }).catch(err => {
+                console.log(err)
+                return err;
+            })
             return event;
         }
     },
