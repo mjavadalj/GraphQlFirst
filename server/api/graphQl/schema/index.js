@@ -17,13 +17,27 @@ input TaskInput {
     dueDate: String!
     related: [String]
 }
+type User {
+    userId: String!
+    password: String!
+    tasks: [String!]
+    relatedTasks: Task
+}
+
+input UserInput {
+    userId: String!
+    password: String!
+    tasks: [String]
+}
 
 type RootQuery {
     tasks: [Task!]!
+    users: [User!]!
 }
 
 type RootMutation {
     createTask(taskInput: TaskInput): Task
+    createUser(userInput: UserInput): User
 }
 
 schema{
