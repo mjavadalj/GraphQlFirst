@@ -6,4 +6,4 @@ const app = require('./app');
 
 const server = http.createServer(app);
 
-server.listen(port || process.env.port ,()=>{console.log("server is Up")} );
+server.listen(process.env.PORT || port ,()=>{console.log("server is Up")} );
