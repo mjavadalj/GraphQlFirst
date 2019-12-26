@@ -9,7 +9,7 @@ services:
         links:
             - db  
     db:
-        container_name: bygoadwv:K3zKb5UZ-nYk3mAevW1LQtPHRpBNIUzT@rajje.db.elephantsql.com
+        container_name: bygoadwv
         image: postgres
         ports: 
-            - '5432:5432'
+            - '5433:5432'
